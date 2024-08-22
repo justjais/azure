@@ -1,17 +1,18 @@
+---
 - name: Set variables
   ansible.builtin.set_fact:
-    app_id: "e0a62513-1d81-480e-a6dc-5c99cdd58d9a"
+    app_id: e0a62513-1d81-480e-a6dc-5c99cdd58d9a
 
 - name: Delete ad service principal
-  azure_rm_adserviceprincipal:
+  azure.azcollection.azure_rm_adserviceprincipal:
     app_id: "{{ app_id }}"
     state: absent
 
 - name: Create ad service principal
-  azure_rm_adserviceprincipal:
+  register: ad_fact
+  azure.azcollection.azure_rm_adserviceprincipal:
     app_id: "{{ app_id }}"
     state: present
-  register: ad_fact
 
 - name: Assert the ad service prinicipal created
   ansible.builtin.assert:
@@ -19,10 +20,10 @@
       - ad_fact.changed
 
 - name: Create ad service principal (idempontent)
-  azure_rm_adserviceprincipal:
+  register: output
+  azure.azcollection.azure_rm_adserviceprincipal:
     app_id: "{{ app_id }}"
     state: present
-  register: output
 
 - name: Assert the ad service principal idempotent
   ansible.builtin.assert:
@@ -30,9 +31,9 @@
       - not output.changed
 
 - name: Get ad service principal info by app_id
-  azure_rm_adserviceprincipal_info:
-    app_id: "{{ app_id }}"
   register: ad_info
+  azure.azcollection.azure_rm_adserviceprincipal_info:
+    app_id: "{{ app_id }}"
 
 - name: Assert The ad service principals facts
   ansible.builtin.assert:
@@ -41,16 +42,16 @@
       - ad_info.service_principals[0].app_role_assignment_required == False
 
 - name: Update ad service principal app_role_assignmentrequired to True
-  azure_rm_adserviceprincipal:
+  register: output
+  azure.azcollection.azure_rm_adserviceprincipal:
     app_id: "{{ app_id }}"
     app_role_assignment_required: true
     state: present
-  register: output
 
 - name: Get ad service principal info by object_id
-  azure_rm_adserviceprincipal_info:
-    object_id: "{{ ad_info.service_principals[0].object_id }}"
   register: ad_info
+  azure.azcollection.azure_rm_adserviceprincipal_info:
+    object_id: "{{ ad_info.service_principals[0].object_id }}"
 
 - name: Assert the ad service principals facts
   ansible.builtin.assert:
@@ -59,10 +60,10 @@
       - ad_info.service_principals[0].app_role_assignment_required == True
 
 - name: Delete ad service principal
-  azure_rm_adserviceprincipal:
+  register: output
+  azure.azcollection.azure_rm_adserviceprincipal:
     app_id: "{{ app_id }}"
     state: absent
-  register: output
 
 - name: Assert the ad service principals deleted
   ansible.builtin.assert:

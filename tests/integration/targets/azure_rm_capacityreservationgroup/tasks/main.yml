@@ -1,3 +1,4 @@
+---
 - name: Prepare random number
   ansible.builtin.set_fact:
     random_postfix: "{{ resource_group | hash('md5') | truncate(10, True, '') }}"

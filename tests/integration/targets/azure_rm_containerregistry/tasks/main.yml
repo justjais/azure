@@ -1,3 +1,4 @@
+---
 - name: Gather Resource Group info
   azure.azcollection.azure_rm_resourcegroup_info:
     name: "{{ resource_group }}"
@@ -18,17 +19,17 @@
       location: "{{ location }}"
     state: present
   loop:
-    - "ansible-test-acr-identity"
-    - "ansible-test-acr-identity-2"
+    - ansible-test-acr-identity
+    - ansible-test-acr-identity-2
 
 - name: Set identities IDs to test. Identities ansible-test-acr-identity and ansible-test-acr-identity-2 have to be created previously
   ansible.builtin.set_fact:
-    user_identity_1: "/subscriptions/{{ azure_subscription_id }}/resourcegroups/{{ resource_group }}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/ansible-test-acr-identity"
-    user_identity_2: "/subscriptions/{{ azure_subscription_id }}/resourcegroups/{{ resource_group }}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/ansible-test-acr-identity-2"
+    user_identity_1: /subscriptions/{{ azure_subscription_id }}/resourcegroups/{{ resource_group }}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/ansible-test-acr-identity
+    user_identity_2: /subscriptions/{{ azure_subscription_id }}/resourcegroups/{{ resource_group }}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/ansible-test-acr-identity-2
 
 - name: Create an container registry
   azure_rm_containerregistry:
-    name: "acr{{ resource_group | hash('md5') | truncate(7, True, '') }}"
+    name: acr{{ resource_group | hash('md5') | truncate(7, True, '') }}
     resource_group: "{{ resource_group }}"
     location: "{{ location }}"
     admin_user_enabled: true
@@ -53,7 +54,7 @@
 
 - name: Update the ACR instance sku, tags and admin_user_enabled
   azure_rm_containerregistry:
-    name: "acr{{ resource_group | hash('md5') | truncate(7, True, '') }}"
+    name: acr{{ resource_group | hash('md5') | truncate(7, True, '') }}
     resource_group: "{{ resource_group }}"
     location: "{{ location }}"
     admin_user_enabled: false
@@ -66,7 +67,7 @@
 
 - name: Create second container registry (to test facts)
   azure_rm_containerregistry:
-    name: "acr{{ resource_group | hash('md5') | truncate(7, True, '') }}sec"
+    name: acr{{ resource_group | hash('md5') | truncate(7, True, '') }}sec
     resource_group: "{{ resource_group }}"
     location: "{{ location }}"
     admin_user_enabled: false
@@ -89,7 +90,7 @@
 - name: Gather facts for single Container Registry
   azure_rm_containerregistry_info:
     resource_group: "{{ resource_group }}"
-    name: "acr{{ resource_group | hash('md5') | truncate(7, True, '') }}"
+    name: acr{{ resource_group | hash('md5') | truncate(7, True, '') }}
   register: output
 
 - name: Assert that facts are returned
@@ -133,7 +134,7 @@
 
 - name: Update second container registry to test identity
   azure_rm_containerregistry:
-    name: "acr{{ resource_group | hash('md5') | truncate(7, True, '') }}sec"
+    name: acr{{ resource_group | hash('md5') | truncate(7, True, '') }}sec
     resource_group: "{{ resource_group }}"
     location: "{{ location }}"
     admin_user_enabled: false
@@ -156,7 +157,7 @@
 
 - name: Update second container registry to test appending identity
   azure_rm_containerregistry:
-    name: "acr{{ resource_group | hash('md5') | truncate(7, True, '') }}sec"
+    name: acr{{ resource_group | hash('md5') | truncate(7, True, '') }}sec
     resource_group: "{{ resource_group }}"
     location: "{{ location }}"
     admin_user_enabled: false
@@ -180,7 +181,7 @@
 
 - name: Update second container registry to test System Identity
   azure_rm_containerregistry:
-    name: "acr{{ resource_group | hash('md5') | truncate(7, True, '') }}sec"
+    name: acr{{ resource_group | hash('md5') | truncate(7, True, '') }}sec
     resource_group: "{{ resource_group }}"
     location: "{{ location }}"
     admin_user_enabled: false
@@ -200,13 +201,13 @@
 
 - name: Delete first container registry
   azure_rm_containerregistry:
-    name: "acr{{ resource_group | hash('md5') | truncate(7, True, '') }}"
+    name: acr{{ resource_group | hash('md5') | truncate(7, True, '') }}
     resource_group: "{{ resource_group }}"
     state: absent
 
 - name: Delete second container registry
   azure_rm_containerregistry:
-    name: "acr{{ resource_group | hash('md5') | truncate(7, True, '') }}sec"
+    name: acr{{ resource_group | hash('md5') | truncate(7, True, '') }}sec
     resource_group: "{{ resource_group }}"
     state: absent
 
@@ -219,5 +220,5 @@
     api_version: "2023-01-31"
     state: absent
   loop:
-    - "ansible-test-acr-identity"
-    - "ansible-test-acr-identity-2"
+    - ansible-test-acr-identity
+    - ansible-test-acr-identity-2

@@ -1,3 +1,4 @@
+---
 - name: Gather Resource Group info
   azure.azcollection.azure_rm_resourcegroup_info:
     name: "{{ resource_group }}"
@@ -14,12 +15,15 @@
     location: "{{ __rg_info.resourcegroups.0.location }}"
 
 - name: Create a new resource group
-  azure_rm_resourcegroup:
+  azure.azcollection.azure_rm_resourcegroup:
     name: "{{ new_resource_group }}"
     location: "{{ location }}"
 
 - name: Create User Managed Identities
-  azure_rm_resource:
+  loop:
+    - ansible-test-pgsql-identity
+    - ansible-test-pgsql-identity-2
+  azure.azcollection.azure_rm_resource:
     resource_group: "{{ new_resource_group }}"
     provider: ManagedIdentity
     resource_type: userAssignedIdentities
@@ -28,14 +32,11 @@
     body:
       location: "{{ location }}"
     state: present
-  loop:
-    - "ansible-test-pgsql-identity"
-    - "ansible-test-pgsql-identity-2"
 
 - name: Set identities IDs to test. Identities ansible-test-psql-identity and ansible-test-psql-identity-2 have to be created previously
   ansible.builtin.set_fact:
-    user_identity_1: "/subscriptions/{{ azure_subscription_id }}/resourcegroups/{{ new_resource_group }}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/ansible-test-pgsql-identity"
-    user_identity_2: "/subscriptions/{{ azure_subscription_id }}/resourcegroups/{{ new_resource_group }}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/ansible-test-pgsql-identity-2"
+    user_identity_1: /subscriptions/{{ azure_subscription_id }}/resourcegroups/{{ new_resource_group }}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/ansible-test-pgsql-identity
+    user_identity_2: /subscriptions/{{ azure_subscription_id }}/resourcegroups/{{ new_resource_group }}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/ansible-test-pgsql-identity-2
 
 - name: Create postgresql flexible server (check mode)
   azure_rm_postgresqlflexibleserver:
@@ -178,7 +179,7 @@
       key1: value1
       key2: value2
     identity:
-      type: "UserAssigned"
+      type: UserAssigned
       user_assigned_identities:
         id:
           - "{{ user_identity_2 }}"
@@ -213,7 +214,7 @@
     name: postflexible{{ rpfx }}
     resource_group: "{{ new_resource_group }}"
     identity:
-      type: "None"
+      type: None
   register: output
 
 - name: Assert no managed identities
@@ -414,23 +415,23 @@
       - output.changed
 
 - name: Destroy User Managed Identities
-  azure_rm_resource:
+  loop:
+    - ansible-test-psql-identity
+    - ansible-test-psql-identity-2
+  azure.azcollection.azure_rm_resource:
     resource_group: "{{ new_resource_group }}"
     provider: ManagedIdentity
     resource_type: userAssignedIdentities
     resource_name: "{{ item }}"
     api_version: "2023-01-31"
     state: absent
-  loop:
-    - "ansible-test-psql-identity"
-    - "ansible-test-psql-identity-2"
 
 - name: Delete the new resource group
-  azure_rm_resourcegroup:
+  register: output
+  azure.azcollection.azure_rm_resourcegroup:
     name: "{{ new_resource_group }}"
     force_delete_nonempty: true
     state: absent
-  register: output
 
 - name: Assert the resource group is well deleted
   ansible.builtin.assert:
