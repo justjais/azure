@@ -1,6 +1,7 @@
+---
 - name: Set variables
   ansible.builtin.set_fact:
-    app_id: "e0a62513-1d81-480e-a6dc-5c99cdd58d9a"
+    app_id: e0a62513-1d81-480e-a6dc-5c99cdd58d9a
 
 - name: Delete ad service principal
   azure_rm_adserviceprincipal:
