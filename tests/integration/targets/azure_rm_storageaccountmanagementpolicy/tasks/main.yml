@@ -1,3 +1,4 @@
+---
 - name: Set random value
   ansible.builtin.set_fact:
     rpfx: "{{ resource_group | hash('md5') | truncate(22, True, '') }}"
@@ -5,7 +6,7 @@
 - name: Create storage account with static website disabled
   azure_rm_storageaccount:
     resource_group: "{{ resource_group }}"
-    name: "st{{ rpfx }}"
+    name: st{{ rpfx }}
     account_type: Standard_LRS
     kind: StorageV2
     static_website:
@@ -14,7 +15,7 @@
 - name: Create storage account management policy rule (Check mode test)
   azure_rm_storageaccountmanagementpolicy:
     resource_group: "{{ resource_group }}"
-    storage_account_name: "st{{ rpfx }}"
+    storage_account_name: st{{ rpfx }}
     rules:
       - name: olcmtest
         type: Lifecycle
@@ -54,14 +55,14 @@
               - appendBlob
             blob_index_match:
               - name: tags6
-                op: '=='
+                op: ==
                 value: value6
   check_mode: true
 
 - name: Create storage account management policy rule
   azure_rm_storageaccountmanagementpolicy:
     resource_group: "{{ resource_group }}"
-    storage_account_name: "st{{ rpfx }}"
+    storage_account_name: st{{ rpfx }}
     rules:
       - name: olcmtest
         type: Lifecycle
@@ -101,7 +102,7 @@
               - appendBlob
             blob_index_match:
               - name: tags6
-                op: '=='
+                op: ==
                 value: value6
   register: output
 
@@ -113,7 +114,7 @@
 - name: Create storage account management policy rule(Idempotent test)
   azure_rm_storageaccountmanagementpolicy:
     resource_group: "{{ resource_group }}"
-    storage_account_name: "st{{ rpfx }}"
+    storage_account_name: st{{ rpfx }}
     rules:
       - name: olcmtest
         type: Lifecycle
@@ -153,7 +154,7 @@
               - appendBlob
             blob_index_match:
               - name: tags6
-                op: '=='
+                op: ==
                 value: value6
   register: output
 
@@ -165,7 +166,7 @@
 - name: Create storage account management policy rule(Updating test)
   azure_rm_storageaccountmanagementpolicy:
     resource_group: "{{ resource_group }}"
-    storage_account_name: "st{{ rpfx }}"
+    storage_account_name: st{{ rpfx }}
     rules:
       - name: olcmtest
         type: Lifecycle
@@ -205,7 +206,7 @@
               - appendBlob
             blob_index_match:
               - name: tags6
-                op: '=='
+                op: ==
                 value: value6
   register: output
 
@@ -217,7 +218,7 @@
 - name: Get storage account management policy
   azure_rm_storageaccountmanagementpolicy_info:
     resource_group: "{{ resource_group }}"
-    storage_account_name: "st{{ rpfx }}"
+    storage_account_name: st{{ rpfx }}
   register: output
 
 - name: Assert the management policy rule facts
@@ -232,7 +233,7 @@
 - name: Delete the storage account management policy's rule
   azure_rm_storageaccountmanagementpolicy:
     resource_group: "{{ resource_group }}"
-    storage_account_name: "st{{ rpfx }}"
+    storage_account_name: st{{ rpfx }}
     state: absent
   register: output
 
