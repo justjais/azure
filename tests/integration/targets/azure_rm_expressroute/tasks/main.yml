@@ -1,6 +1,7 @@
+---
 - name: Create random express route
   ansible.builtin.set_fact:
-    express_route: "test{{ resource_group | hash('md5') | truncate(16, True, '') + (65535 | random | string) }}"
+    express_route: test{{ resource_group | hash('md5') | truncate(16, True, '') + (65535 | random | string) }}
 
 - name: Create Express route (check mode)
   azure_rm_expressroute:
@@ -27,7 +28,6 @@
   ansible.builtin.assert:
     that: results.changed
 
-
 - name: Create Express route
   azure_rm_expressroute:
     location: eastus
@@ -51,7 +51,6 @@
 - name: Assert the express route created
   ansible.builtin.assert:
     that: results.changed
-
 
 - name: Update Express route
   azure_rm_expressroute:
@@ -78,7 +77,6 @@
     that:
       - results.changed
       - results.state.tags.test == 'modified'
-
 
 - name: Retrieve Express Route
   azure_rm_expressroute_info:

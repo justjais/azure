@@ -1,7 +1,8 @@
+---
 - name: Set variables
   ansible.builtin.set_fact:
-    app_id: "e0a62513-1d81-480e-a6dc-5c99cdd58d9a"
-    app_object_id: "b52e8275-a1ee-4c4a-86ff-15992e0920ed"
+    app_id: e0a62513-1d81-480e-a6dc-5c99cdd58d9a
+    app_object_id: b52e8275-a1ee-4c4a-86ff-15992e0920ed
 
 - name: Create first ad password by app_id
   azure_rm_adpassword:
