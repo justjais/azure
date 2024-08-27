@@ -1,3 +1,4 @@
+---
 - name: Set Random Variables
   ansible.builtin.set_fact:
     rpfx: "{{ resource_group | hash('md5') | truncate(20, True, '') }}"
@@ -5,7 +6,7 @@
 - name: Create a Network Watcher(Checkmode test)
   azure_rm_networkwatcher:
     resource_group: "{{ resource_group }}"
-    name: "mynetwacher{{ rpfx }}"
+    name: mynetwacher{{ rpfx }}
     location: westus3
     tags:
       testing: testing
@@ -15,7 +16,7 @@
 - name: Create a new Network Watcher
   azure_rm_networkwatcher:
     resource_group: "{{ resource_group }}"
-    name: "mynetwacher{{ rpfx }}"
+    name: mynetwacher{{ rpfx }}
     location: westus3
     tags:
       testing: testing
@@ -30,7 +31,7 @@
 - name: Create a Network Watcher again(Idempotent test)
   azure_rm_networkwatcher:
     resource_group: "{{ resource_group }}"
-    name: "mynetwacher{{ rpfx }}"
+    name: mynetwacher{{ rpfx }}
     location: westus3
     tags:
       testing: testing
@@ -45,7 +46,7 @@
 - name: Get the network watcher facts
   azure_rm_networkwatcher_info:
     resource_group: "{{ resource_group }}"
-    name: "mynetwacher{{ rpfx }}"
+    name: mynetwacher{{ rpfx }}
   register: output
 
 - name: Assert the network wacher facts
@@ -68,7 +69,7 @@
 - name: Delete the Network Watcher
   azure_rm_networkwatcher:
     resource_group: "{{ resource_group }}"
-    name: "mynetwacher{{ rpfx }}"
+    name: mynetwacher{{ rpfx }}
     state: absent
   register: output
 
