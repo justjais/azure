@@ -1,3 +1,4 @@
+---
 - name: Prepare facts
   ansible.builtin.set_fact:
     resource_prefix: "{{ resource_group_secondary | hash('md5') | truncate(7, True, '') }}{{ 1000 | random }}"
@@ -15,7 +16,7 @@
     linux_app_name: "{{ (resource_prefix | replace('-', 'x'))[-8:] }}{{ 1000 | random }}linuxapp"
     win_plan_name: "{{ (resource_prefix | replace('-', 'x'))[-8:] }}winplan"
     linux_plan_name: "{{ (resource_group_secondary | replace('-', 'x'))[-8:] }}linplan"
-    slot1_name: "stage1"
+    slot1_name: stage1
     location: "{{ __rg_info.resourcegroups.0.location }}"
 
 - name: Create User Managed Identities
@@ -29,13 +30,13 @@
       location: "{{ location }}"
     state: present
   loop:
-    - "ansible-test-webapp-identity"
-    - "ansible-test-webapp-identity-2"
+    - ansible-test-webapp-identity
+    - ansible-test-webapp-identity-2
 
 - name: Set identities IDs to test. Identities ansible-test-webapp-identity and ansible-test-webapp-identity-2 have to be created previously
   ansible.builtin.set_fact:
-    user_identity_1: "/subscriptions/{{ azure_subscription_id }}/resourcegroups/{{ resource_group }}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/ansible-test-webapp-identity"
-    user_identity_2: "/subscriptions/{{ azure_subscription_id }}/resourcegroups/{{ resource_group }}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/ansible-test-webapp-identity-2"
+    user_identity_1: /subscriptions/{{ azure_subscription_id }}/resourcegroups/{{ resource_group }}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/ansible-test-webapp-identity
+    user_identity_2: /subscriptions/{{ azure_subscription_id }}/resourcegroups/{{ resource_group }}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/ansible-test-webapp-identity-2
 
 - name: Create a windows web app with non-exist app service plan
   azure_rm_webapp:
@@ -64,8 +65,7 @@
 
 - name: Assert output changed
   ansible.builtin.assert:
-    that:
-      output.changed
+    that: output.changed
 
 - name: Get the web app
   azure_rm_webapp_info:
@@ -107,13 +107,13 @@
     name: "{{ win_app_name }}4"
     plan: "{{ win_plan_name }}"
     frameworks:
-      - name: "java"
+      - name: java
         version: "17"
         settings:
-          java_container: "Tomcat"
+          java_container: Tomcat
           java_container_version: "8.0"
     app_settings:
-      testkey: "testvalue"
+      testkey: testvalue
   register: output
 
 - name: Assert web app was created
@@ -131,7 +131,7 @@
     that:
       - output.webapps | length == 1
       - output.webapps[0].app_settings | length == 1
-      - output.webapps[0].frameworks | length > 1  # there's default frameworks eg net_framework
+      - output.webapps[0].frameworks | length > 1 # there's default frameworks eg net_framework
 
 - name: Update app settings and framework
   azure_rm_webapp:
@@ -139,13 +139,13 @@
     name: "{{ win_app_name }}4"
     plan: "{{ win_plan_name }}"
     frameworks:
-      - name: "java"
+      - name: java
         version: "17"
         settings:
-          java_container: "Tomcat"
+          java_container: Tomcat
           java_container_version: "8.5"
     app_settings:
-      testkey2: "testvalue2"
+      testkey2: testvalue2
   register: output
 
 - name: Assert the web app was updated
@@ -198,11 +198,11 @@
     name: "{{ win_app_name }}5"
     plan: "{{ win_plan_name }}"
     frameworks:
-      - name: "python"
+      - name: python
         version: "2.7"
       - name: node
         version: "6.6"
-      - name: "php"
+      - name: php
         version: "7.0"
   register: output
 
@@ -222,7 +222,7 @@
       sku: S1
       number_of_workers: 1
     container_settings:
-      name: "ansible/ansible:ubuntu1404"
+      name: ansible/ansible:ubuntu1404
   register: output
 
 - name: Assert the web app was created
@@ -238,7 +238,7 @@
       resource_group: "{{ linux_app_plan_resource_group }}"
       name: "{{ linux_plan_name }}"
     container_settings:
-      name: "ansible/ansible:ubuntu1404"
+      name: ansible/ansible:ubuntu1404
       registry_server_url: test.io
       registry_server_user: user
       registry_server_password: password
@@ -304,7 +304,7 @@
       resource_group: "{{ linux_app_plan_resource_group }}"
       name: "{{ linux_plan_name }}"
     deployment_source:
-      url: "https://github.com/test/test"
+      url: https://github.com/test/test
       branch: master
     scm_type: GitHub
   register: output
@@ -330,12 +330,12 @@
     name: "{{ win_app_name }}11"
     plan: "{{ win_plan_name }}"
     frameworks:
-      - name: "python"
+      - name: python
         version: "3.11"
-      - name: "java"
+      - name: java
         version: "17"
   register: fail_win_java_version_mutual_exclusive
-  failed_when: 'fail_win_java_version_mutual_exclusive.msg != "Java is mutually exclusive with other frameworks."'
+  failed_when: fail_win_java_version_mutual_exclusive.msg != "Java is mutually exclusive with other frameworks."
 
 - name: Assert error when linux web app, only can specify one framework
   azure_rm_webapp:
@@ -346,9 +346,9 @@
       resource_group: "{{ linux_app_plan_resource_group }}"
       name: "{{ linux_plan_name }}"
     frameworks:
-      - name: "python"
+      - name: python
         version: "3.11"
-      - name: "node"
+      - name: node
         version: "18"
   register: fail_linux_one_framework_only
   failed_when: fail_linux_one_framework_only.msg != "Can specify one framework only for Linux web app."
@@ -365,7 +365,7 @@
       - name: java
         version: "8"
         settings:
-          java_container: "tomcat"
+          java_container: tomcat
           java_container_version: "8.5"
   register: output
 
@@ -399,13 +399,13 @@
       - name: java
         version: "8"
         settings:
-          java_container: "tomcat"
+          java_container: tomcat
           java_container_version: "8.5"
     client_affinity_enabled: false
     https_only: true
     always_on: true
     min_tls_version: "1.2"
-    ftps_state: "Disabled"
+    ftps_state: Disabled
   register: output
 - name: Assert the web app was created
   ansible.builtin.assert:
@@ -425,13 +425,13 @@
       - name: java
         version: "8"
         settings:
-          java_container: "tomcat"
+          java_container: tomcat
           java_container_version: "8.5"
     client_affinity_enabled: false
     https_only: true
     always_on: true
     min_tls_version: "1.2"
-    ftps_state: "Disabled"
+    ftps_state: Disabled
   register: output
 - name: Assert the web app not changed
   ansible.builtin.assert:
@@ -464,13 +464,13 @@
       - name: java
         version: "8"
         settings:
-          java_container: "tomcat"
+          java_container: tomcat
           java_container_version: "8.5"
     client_affinity_enabled: false
     https_only: true
     always_on: true
     min_tls_version: "1.2"
-    ftps_state: "FtpsOnly"
+    ftps_state: FtpsOnly
   register: output
 - name: Assert the web app was updated
   ansible.builtin.assert:
@@ -503,13 +503,13 @@
       - name: java
         version: "8"
         settings:
-          java_container: "tomcat"
+          java_container: tomcat
           java_container_version: "8.5"
     client_affinity_enabled: false
     https_only: true
     always_on: true
     min_tls_version: "1.2"
-    ftps_state: "Disabled"
+    ftps_state: Disabled
     http20_enabled: true
   register: output
 - name: Assert the web app was created
@@ -530,13 +530,13 @@
       - name: java
         version: "8"
         settings:
-          java_container: "tomcat"
+          java_container: tomcat
           java_container_version: "8.5"
     client_affinity_enabled: false
     https_only: true
     always_on: true
     min_tls_version: "1.2"
-    ftps_state: "Disabled"
+    ftps_state: Disabled
     http20_enabled: true
   register: output
 - name: Assert the web app not changed
@@ -570,13 +570,13 @@
       - name: java
         version: "8"
         settings:
-          java_container: "tomcat"
+          java_container: tomcat
           java_container_version: "8.5"
     client_affinity_enabled: false
     https_only: true
     always_on: true
     min_tls_version: "1.2"
-    ftps_state: "Disabled"
+    ftps_state: Disabled
     http20_enabled: false
   register: output
 - name: Assert the web app was updated
@@ -607,10 +607,10 @@
       sku: S1
     site_auth_settings:
       client_id: "{{ azure_client_id }}"
-      default_provider: 'MicrosoftAccount'
-      runtime_version: '-2'
+      default_provider: MicrosoftAccount
+      runtime_version: "-2"
       token_refresh_extension_hours: 90
-      unauthenticated_client_action: 'RedirectToLoginPage'
+      unauthenticated_client_action: RedirectToLoginPage
       client_secret: "{{ azure_secret }}"
       token_store_enabled: true
       is_auth_from_file: false
@@ -619,8 +619,7 @@
 
 - name: Assert the web app is well created
   ansible.builtin.assert:
-    that:
-      output.changed
+    that: output.changed
 
 - name: Update the web app with site_auth_settings
   azure_rm_webapp:
@@ -633,10 +632,10 @@
       sku: S1
     site_auth_settings:
       client_id: "{{ azure_client_id }}"
-      default_provider: 'MicrosoftAccount'
-      runtime_version: '-3'
+      default_provider: MicrosoftAccount
+      runtime_version: "-3"
       token_refresh_extension_hours: 100
-      unauthenticated_client_action: 'RedirectToLoginPage'
+      unauthenticated_client_action: RedirectToLoginPage
       client_secret: "{{ azure_secret }}"
       token_store_enabled: false
       is_auth_from_file: false
@@ -645,8 +644,7 @@
 
 - name: Assert the web app is well updated
   ansible.builtin.assert:
-    that:
-      output.changed
+    that: output.changed
 
 - name: Get the web app facts
   azure_rm_webapp_info:
@@ -682,8 +680,7 @@
 
 - name: Assert the web app is well updated
   ansible.builtin.assert:
-    that:
-      output.changed
+    that: output.changed
 
 - name: Get the web app facts
   azure_rm_webapp_info:
@@ -707,7 +704,7 @@
       is_linux: false
       sku: S1
     identity:
-      type: "SystemAssigned, UserAssigned"
+      type: SystemAssigned, UserAssigned
       user_assigned_identities:
         id:
           - "{{ user_identity_2 }}"
@@ -715,8 +712,7 @@
 
 - name: Assert the web app is well updated
   ansible.builtin.assert:
-    that:
-      output.changed
+    that: output.changed
 
 - name: Get the web app facts
   azure_rm_webapp_info:
@@ -741,7 +737,7 @@
       is_linux: false
       sku: S1
     identity:
-      type: "SystemAssigned, UserAssigned"
+      type: SystemAssigned, UserAssigned
       user_assigned_identities:
         id:
           - "{{ user_identity_2 }}"
@@ -749,8 +745,7 @@
 
 - name: Assert the web app is not updated
   ansible.builtin.assert:
-    that:
-      not output.changed
+    that: not output.changed
 
 - name: Get the web app facts
   azure_rm_webapp_info:
@@ -775,13 +770,12 @@
       is_linux: false
       sku: S1
     identity:
-      type: "SystemAssigned"
+      type: SystemAssigned
   register: output
 
 - name: Assert the web app is well updated
   ansible.builtin.assert:
-    that:
-      output.changed
+    that: output.changed
 
 - name: Get the web app facts
   azure_rm_webapp_info:
@@ -850,7 +844,7 @@
     location: westus2
     name: "{{ slot1_name }}"
     frameworks:
-      - name: "node"
+      - name: node
         version: "10.1"
     app_settings:
       testkey: testvalue2
@@ -899,5 +893,5 @@
     api_version: "2023-01-31"
     state: absent
   loop:
-    - "ansible-test-webapp-identity"
-    - "ansible-test-webapp-identity-2"
+    - ansible-test-webapp-identity
+    - ansible-test-webapp-identity-2

@@ -12,8 +12,8 @@
 # ----------------------------------------------------------------------------
 - name: Prepare random number
   ansible.builtin.set_fact:
-    storage_account_name: "st{{ resource_group | hash('md5') | truncate(7, True, '') }}{{ 1000 | random }}"
-    batch_account_name: "ba{{ resource_group | hash('md5') | truncate(7, True, '') }}{{ 1000 | random }}"
+    storage_account_name: st{{ resource_group | hash('md5') | truncate(7, True, '') }}{{ 1000 | random }}
+    batch_account_name: ba{{ resource_group | hash('md5') | truncate(7, True, '') }}{{ 1000 | random }}
   run_once: true
 
 - name: Create Storage Account
@@ -43,12 +43,12 @@
       location: "{{ location }}"
     state: present
   loop:
-    - "ansible-test-batchaccount-identity"
-    - "ansible-test-batchaccount-identity-2"
+    - ansible-test-batchaccount-identity
+    - ansible-test-batchaccount-identity-2
 
 - name: Set identities base path
   ansible.builtin.set_fact:
-    identity_base_path: "/subscriptions/{{ azure_subscription_id }}/resourcegroups/{{ resource_group }}/providers/Microsoft.ManagedIdentity"
+    identity_base_path: /subscriptions/{{ azure_subscription_id }}/resourcegroups/{{ resource_group }}/providers/Microsoft.ManagedIdentity
 
 - name: Set identities IDs to test. Identities ansible-test-batchaccount-identity and ansible-test-batchaccount-identity-2 have to be created previously
   ansible.builtin.set_fact:
@@ -191,5 +191,5 @@
     api_version: "2023-01-31"
     state: absent
   loop:
-    - "ansible-test-batchaccount-identity"
-    - "ansible-test-batchaccount-identity-2"
+    - ansible-test-batchaccount-identity
+    - ansible-test-batchaccount-identity-2
