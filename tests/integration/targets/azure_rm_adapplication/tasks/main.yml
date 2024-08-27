@@ -1,6 +1,7 @@
+---
 - name: Set display name variable
   ansible.builtin.set_fact:
-    display_name: "test_app_{{ 999999999999999999994 | random | to_uuid }}"
+    display_name: test_app_{{ 999999999999999999994 | random | to_uuid }}
   run_once: true
 
 - name: Get full list from ad app info
@@ -30,14 +31,14 @@
   azure_rm_adapplication:
     display_name: "{{ display_name }}"
     app_id: "{{ create_output.app_id }}"
-    homepage: "https://{{ display_name }}.test.com"
+    homepage: https://{{ display_name }}.test.com
     sign_in_audience: AzureADMultipleOrgs
     identifier_uris:
       - "{{ display_name }}.com"
     app_roles:
       - allowed_member_types:
           - User
-        description: "for app role test"
+        description: for app role test
         display_name: "{{ display_name }}_approle"
         is_enabled: true
         value: Password@0329
