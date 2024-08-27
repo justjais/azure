@@ -1,3 +1,4 @@
+---
 - name: Gather Resource Group info
   azure.azcollection.azure_rm_resourcegroup_info:
     name: "{{ resource_group }}"
@@ -6,8 +7,8 @@
 - name: Set location based on resource group and Storage Account Names
   ansible.builtin.set_fact:
     location: "{{ __rg_info.resourcegroups.0.location }}"
-    storage_account_name_default: "sa{{ resource_group | hash('md5') | truncate(20, True, '') }}"
-    storage_account_name_explicit: "sa{{ resource_group | hash('sha1') | truncate(20, True, '') }}"
+    storage_account_name_default: sa{{ resource_group | hash('md5') | truncate(20, True, '') }}
+    storage_account_name_explicit: sa{{ resource_group | hash('sha1') | truncate(20, True, '') }}
 
 - name: Create User Managed Identities
   azure_rm_resource:
@@ -20,12 +21,12 @@
       location: "{{ location }}"
     state: present
   loop:
-    - "ansible-test-storageaccount-identity"
-    - "ansible-test-storageaccount-identity-2"
+    - ansible-test-storageaccount-identity
+    - ansible-test-storageaccount-identity-2
 
 - name: Set identities base path
   ansible.builtin.set_fact:
-    identity_base_path: "/subscriptions/{{ azure_subscription_id }}/resourcegroups/{{ resource_group }}/providers/Microsoft.ManagedIdentity"
+    identity_base_path: /subscriptions/{{ azure_subscription_id }}/resourcegroups/{{ resource_group }}/providers/Microsoft.ManagedIdentity
 
 - name: Set identities IDs to test. Identities ansible-test-storageaccount-identity and ansible-test-storageaccount-identity-2 have to be created previously
   ansible.builtin.set_fact:
@@ -35,7 +36,7 @@
 - name: Test invalid account name
   azure_rm_storageaccount:
     resource_group: "{{ resource_group }}"
-    name: "invalid_char$"
+    name: invalid_char$
     account_type: Standard_LRS
   register: output
   ignore_errors: true
@@ -135,8 +136,8 @@
     kind: StorageV2
     static_website:
       enabled: true
-      index_document: "index.html"
-      error_document404_path: "error.html"
+      index_document: index.html
+      error_document404_path: error.html
   register: output
 - name: Assert output
   ansible.builtin.assert:
@@ -155,8 +156,8 @@
     kind: StorageV2
     static_website:
       enabled: true
-      index_document: "index.html"
-      error_document404_path: "error.html"
+      index_document: index.html
+      error_document404_path: error.html
   register: output
 - name: Assert not changed
   ansible.builtin.assert:
@@ -186,7 +187,7 @@
 - name: Assert the storage account facts
   ansible.builtin.assert:
     that:
-      - "output.storageaccounts | length == 1"
+      - output.storageaccounts | length == 1
       - output.storageaccounts[0].is_hns_enabled == true
       - output.storageaccounts[0].large_file_shares_state == 'Enabled'
 
@@ -198,7 +199,7 @@
     kind: StorageV2
     static_website:
       enabled: true
-      index_document: "abc.htm"
+      index_document: abc.htm
     identity:
       type: UserAssigned
       user_assigned_identity: "{{ user_identity_1 }}"
@@ -223,7 +224,7 @@
     kind: StorageV2
     static_website:
       enabled: true
-      index_document: "abc.htm"
+      index_document: abc.htm
     identity:
       type: UserAssigned
       user_assigned_identity: "{{ user_identity_1 }}"
@@ -241,7 +242,7 @@
     kind: StorageV2
     static_website:
       enabled: true
-      index_document: "abc.htm"
+      index_document: abc.htm
     identity:
       type: UserAssigned
       user_assigned_identity: "{{ user_identity_2 }}"
@@ -256,7 +257,7 @@
 - name: Assert the storage account facts
   ansible.builtin.assert:
     that:
-      - "output.storageaccounts | length == 1"
+      - output.storageaccounts | length == 1
       - output.storageaccounts[0].identity.type == "UserAssigned"
       - output.storageaccounts[0].identity.user_assigned_identities | length == 1
       - output.storageaccounts[0].identity.user_assigned_identities[user_identity_2] is defined
@@ -269,7 +270,7 @@
     kind: StorageV2
     static_website:
       enabled: true
-      index_document: "abc.htm"
+      index_document: abc.htm
     identity:
       type: SystemAssigned
   register: output
@@ -333,13 +334,13 @@
     https_only: false
     kind: StorageV2
     location: eastus
-    minimum_tls_version: 'TLS1_2'
+    minimum_tls_version: TLS1_2
     name: "{{ storage_account_name_explicit }}"
     network_acls:
       bypass: AzureServices
       default_action: Deny
       ip_rules:
-        - value: '9.9.9.9'
+        - value: 9.9.9.9
           action: Allow
     resource_group: "{{ resource_group }}"
     tags:
@@ -381,13 +382,13 @@
     https_only: false
     kind: StorageV2
     location: eastus
-    minimum_tls_version: 'TLS1_2'
+    minimum_tls_version: TLS1_2
     name: "{{ storage_account_name_explicit }}"
     network_acls:
       bypass: AzureServices
       default_action: Deny
       ip_rules:
-        - value: '9.9.9.9'
+        - value: 9.9.9.9
           action: Allow
     resource_group: "{{ resource_group }}"
     tags:
@@ -464,12 +465,12 @@
         max_age_in_seconds: 200
     https_only: false
     kind: StorageV2
-    minimum_tls_version: 'TLS1_1'
+    minimum_tls_version: TLS1_1
     network_acls:
       bypass: AzureServices
       default_action: Deny
       ip_rules:
-        - value: '9.9.9.9'
+        - value: 9.9.9.9
           action: Allow
     tags:
       test: test
@@ -524,9 +525,9 @@
     resource_group: "{{ resource_group }}"
     account_type: Standard_LRS
     https_only: true
-    minimum_tls_version: 'TLS1_2'
+    minimum_tls_version: TLS1_2
     allow_blob_public_access: false
-    public_network_access: 'Disabled'
+    public_network_access: Disabled
   register: output
 - name: Assert desired account config
   ansible.builtin.assert:
@@ -543,9 +544,9 @@
     resource_group: "{{ resource_group }}"
     account_type: Standard_LRS
     https_only: true
-    minimum_tls_version: 'TLS1_2'
+    minimum_tls_version: TLS1_2
     allow_blob_public_access: false
-    public_network_access: 'Disabled'
+    public_network_access: Disabled
   register: output
 - name: Assert no change
   ansible.builtin.assert:
@@ -575,9 +576,9 @@
 - name: Assert the storage account updated
   ansible.builtin.assert:
     that:
-      - "output.state.tags | length == 2"
-      - "output.state.tags.testing == 'testing'"
-      - "output.state.tags.delete == 'never'"
+      - output.state.tags | length == 2
+      - output.state.tags.testing == 'testing'
+      - output.state.tags.delete == 'never'
 
 - name: Gather facts connection string and blob_cors
   azure_rm_storageaccount_info:
@@ -589,7 +590,7 @@
 - name: Assert the storage account facts
   ansible.builtin.assert:
     that:
-      - "output.storageaccounts | length == 1"
+      - output.storageaccounts | length == 1
       - not output.storageaccounts[0].custom_domain
       - output.storageaccounts[0].account_type == "Premium_LRS"
       - output.storageaccounts[0].primary_endpoints.blob.connectionstring
@@ -731,7 +732,7 @@
 - name: Assert all storage account facts
   ansible.builtin.assert:
     that:
-      - "output.storageaccounts | length >= 2"
+      - output.storageaccounts | length >= 2
 
 - name: Delete storage accounts
   azure_rm_storageaccount:
@@ -759,5 +760,5 @@
     api_version: "2023-01-31"
     state: absent
   loop:
-    - "ansible-test-storageaccount-identity"
-    - "ansible-test-storageaccount-identity-2"
+    - ansible-test-storageaccount-identity
+    - ansible-test-storageaccount-identity-2
