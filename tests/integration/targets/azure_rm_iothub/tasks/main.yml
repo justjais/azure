@@ -1,3 +1,4 @@
+---
 - name: Gather Resource Group info
   azure.azcollection.azure_rm_resourcegroup_info:
     name: "{{ resource_group }}"
@@ -19,17 +20,17 @@
       location: "{{ location }}"
     state: present
   loop:
-    - "ansible-test-iothub-identity"
-    - "ansible-test-iothub-identity-2"
+    - ansible-test-iothub-identity
+    - ansible-test-iothub-identity-2
 
 - name: Set identities IDs to test. Identities ansible-test-iothub-identity and ansible-test-iothub-identity-2 have to be created previously
   ansible.builtin.set_fact:
-    user_identity_1: "/subscriptions/{{ azure_subscription_id }}/resourcegroups/{{ resource_group }}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/ansible-test-iothub-identity"
-    user_identity_2: "/subscriptions/{{ azure_subscription_id }}/resourcegroups/{{ resource_group }}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/ansible-test-iothub-identity-2"
+    user_identity_1: /subscriptions/{{ azure_subscription_id }}/resourcegroups/{{ resource_group }}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/ansible-test-iothub-identity
+    user_identity_2: /subscriptions/{{ azure_subscription_id }}/resourcegroups/{{ resource_group }}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/ansible-test-iothub-identity-2
 
 - name: Create IoT Hub (check mode)
   azure_rm_iothub:
-    name: "hub{{ rpfx }}"
+    name: hub{{ rpfx }}
     resource_group: "{{ resource_group }}"
     ip_filters:
       - name: filter1
@@ -45,14 +46,14 @@
 
 - name: Query IoT Hub
   azure_rm_iothub_info:
-    name: "hub{{ rpfx }}"
+    name: hub{{ rpfx }}
     resource_group: "{{ resource_group }}"
   register: iothub
   ignore_errors: true
 
 - name: Create IoT Hub
   azure_rm_iothub:
-    name: "hub{{ rpfx }}"
+    name: hub{{ rpfx }}
     resource_group: "{{ resource_group }}"
     ip_filters:
       - name: filter1
@@ -67,7 +68,7 @@
 
 - name: Update IoT Hub (identity)
   azure_rm_iothub:
-    name: "hub{{ rpfx }}"
+    name: hub{{ rpfx }}
     resource_group: "{{ resource_group }}"
     identity:
       type: UserAssigned
@@ -83,7 +84,7 @@
 
 - name: Get the IoT Hub facts
   azure_rm_iothub_info:
-    name: "hub{{ rpfx }}"
+    name: hub{{ rpfx }}
     resource_group: "{{ resource_group }}"
   register: iothub
 
@@ -95,7 +96,7 @@
 
 - name: Create IoT Hub (idempontent)
   azure_rm_iothub:
-    name: "hub{{ rpfx }}"
+    name: hub{{ rpfx }}
     resource_group: "{{ resource_group }}"
     ip_filters:
       - name: filter1
@@ -115,7 +116,7 @@
 
 - name: Update IoT Hub (identity)
   azure_rm_iothub:
-    name: "hub{{ rpfx }}"
+    name: hub{{ rpfx }}
     resource_group: "{{ resource_group }}"
     identity:
       type: UserAssigned
@@ -132,7 +133,7 @@
 
 - name: Get the IoT Hub facts
   azure_rm_iothub_info:
-    name: "hub{{ rpfx }}"
+    name: hub{{ rpfx }}
     resource_group: "{{ resource_group }}"
   register: iothub
 
@@ -145,7 +146,7 @@
 
 - name: Query IoT Hub
   azure_rm_iothub_info:
-    name: "hub{{ rpfx }}"
+    name: hub{{ rpfx }}
     resource_group: "{{ resource_group }}"
     list_keys: true
   register: iothub
@@ -165,10 +166,10 @@
 
 - name: Create devices
   azure_rm_iotdevice:
-    hub: "hub{{ rpfx }}"
+    hub: hub{{ rpfx }}
     hub_policy_name: "{{ registry_write_name }}"
     hub_policy_key: "{{ registry_write_key }}"
-    name: "mydevice{{ item }}"
+    name: mydevice{{ item }}
     primary_key: "{{ registry_write_key }}"
     secondary_key: "{{ secondary_key }}"
     twin_tags:
@@ -182,7 +183,7 @@
 
 - name: Query devices
   azure_rm_iotdevice_info:
-    hub: "hub{{ rpfx }}"
+    hub: hub{{ rpfx }}
     hub_policy_name: "{{ registry_write_name }}"
     hub_policy_key: "{{ registry_write_key }}"
   register: devices
@@ -194,8 +195,8 @@
 
 - name: Query devices by name
   azure_rm_iotdevice_info:
-    hub: "hub{{ rpfx }}"
-    name: "mydevice1"
+    hub: hub{{ rpfx }}
+    name: mydevice1
     hub_policy_name: "{{ registry_write_name }}"
     hub_policy_key: "{{ registry_write_key }}"
   register: devices
@@ -212,10 +213,10 @@
 
 - name: Update devices
   azure_rm_iotdevice:
-    hub: "hub{{ rpfx }}"
+    hub: hub{{ rpfx }}
     hub_policy_name: "{{ registry_write_name }}"
     hub_policy_key: "{{ registry_write_key }}"
-    name: "mydevice{{ item }}"
+    name: mydevice{{ item }}
     edge_enabled: true
     primary_key: "{{ registry_write_key }}"
     secondary_key: "{{ secondary_key }}"
@@ -234,7 +235,7 @@
 
 - name: Query devices twin
   azure_rm_iotdevice_info:
-    hub: "hub{{ rpfx }}"
+    hub: hub{{ rpfx }}
     hub_policy_name: "{{ registry_write_name }}"
     hub_policy_key: "{{ registry_write_key }}"
   register: devices
@@ -246,7 +247,7 @@
 
 - name: Delete IoT Hub (check mode)
   azure_rm_iothub:
-    name: "hub{{ rpfx }}"
+    name: hub{{ rpfx }}
     resource_group: "{{ resource_group }}"
     state: absent
   check_mode: true
@@ -259,7 +260,7 @@
 
 - name: Delete IoT Hub
   azure_rm_iothub:
-    name: "hub{{ rpfx }}"
+    name: hub{{ rpfx }}
     resource_group: "{{ resource_group }}"
     state: absent
   register: iothub
@@ -278,5 +279,5 @@
     api_version: "2023-01-31"
     state: absent
   loop:
-    - "ansible-test-iothub-identity"
-    - "ansible-test-iothub-identity-2"
+    - ansible-test-iothub-identity
+    - ansible-test-iothub-identity-2

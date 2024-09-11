@@ -1,9 +1,9 @@
+---
 - name: Prepare random number
   ansible.builtin.set_fact:
-    cdnprofilename: "cdnprofile{{ resource_group | hash('md5') | truncate(7, True, '') }}{{ 1000 | random }}"
-    endpointname: "endpoint{{ resource_group | hash('md5') | truncate(7, True, '') }}{{ 1000 | random }}"
+    cdnprofilename: cdnprofile{{ resource_group | hash('md5') | truncate(7, True, '') }}{{ 1000 | random }}
+    endpointname: endpoint{{ resource_group | hash('md5') | truncate(7, True, '') }}{{ 1000 | random }}
   run_once: true
-
 
 - name: Create a CDN profile(check mode)
   azure_rm_cdnprofile:
@@ -53,7 +53,7 @@
 - name: Assert fact returns the created one
   ansible.builtin.assert:
     that:
-      - "fact.cdnprofiles | length == 1"
+      - fact.cdnprofiles | length == 1
       - fact.cdnprofiles[0].sku == 'Standard_Verizon'
       - fact.cdnprofiles[0].tags.foo == 'bar'
 
@@ -106,7 +106,7 @@
 - name: Assert the CDN is still there
   ansible.builtin.assert:
     that:
-      - "fact.cdnprofiles | length == 1"
+      - fact.cdnprofiles | length == 1
       - fact.cdnprofiles[0].sku == 'Standard_Verizon'
       - fact.cdnprofiles[0].tags.foo == 'bar'
       - fact.cdnprofiles[0].tags.baz == 'qux'
@@ -117,8 +117,8 @@
     name: "{{ endpointname }}"
     profile_name: "{{ cdnprofilename }}"
     origins:
-      - name: "org{{ endpointname }}"
-        host_name: "www.google.com"
+      - name: org{{ endpointname }}
+        host_name: www.google.com
     tags:
       testing: testing
       delete: on-exit
@@ -131,8 +131,8 @@
     name: "{{ endpointname }}"
     profile_name: "{{ cdnprofilename }}"
     origins:
-      - name: "org{{ endpointname }}"
-        host_name: "www.google.com"
+      - name: org{{ endpointname }}
+        host_name: www.google.com
     tags:
       testing: testing
       delete: on-exit
@@ -170,8 +170,8 @@
     name: "{{ endpointname }}"
     profile_name: "{{ cdnprofilename }}"
     origins:
-      - name: "org{{ endpointname }}"
-        host_name: "www.google.com"
+      - name: org{{ endpointname }}
+        host_name: www.google.com
     tags:
       testing: testing
       delete: on-exit
@@ -275,4 +275,4 @@
 - name: Assert fact returns empty
   ansible.builtin.assert:
     that:
-      - "fact.cdnprofiles | length == 0"
+      - fact.cdnprofiles | length == 0

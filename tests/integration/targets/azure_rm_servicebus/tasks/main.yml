@@ -1,3 +1,4 @@
+---
 - name: Gather Resource Group info
   azure.azcollection.azure_rm_resourcegroup_info:
     name: "{{ resource_group }}"
@@ -20,13 +21,13 @@
       location: "{{ location }}"
     state: present
   loop:
-    - "ansible-test-servicebus-identity"
-    - "ansible-test-servicebus-identity-2"
-    - "ansible-test-servicebus-identity-3"
+    - ansible-test-servicebus-identity
+    - ansible-test-servicebus-identity-2
+    - ansible-test-servicebus-identity-3
 
 - name: Set identities base path
   ansible.builtin.set_fact:
-    identity_base_path: "/subscriptions/{{ azure_subscription_id }}/resourcegroups/{{ resource_group }}/providers/Microsoft.ManagedIdentity"
+    identity_base_path: /subscriptions/{{ azure_subscription_id }}/resourcegroups/{{ resource_group }}/providers/Microsoft.ManagedIdentity
 
 - name: Set identities IDs to test. Identities ansible-test-servicebus-identity and ansible-test-servicebus-identity-2 have to be created previously
   ansible.builtin.set_fact:
@@ -36,7 +37,7 @@
 
 - name: Create a namespace
   azure_rm_servicebus:
-    name: "ns{{ rpfx }}"
+    name: ns{{ rpfx }}
     resource_group: "{{ resource_group }}"
     sku: premium
     tags:
@@ -52,7 +53,7 @@
 
 - name: Create a namespace (idempontent)
   azure_rm_servicebus:
-    name: "ns{{ rpfx }}"
+    name: ns{{ rpfx }}
     resource_group: "{{ resource_group }}"
     sku: premium
   register: namespace
@@ -64,7 +65,7 @@
 
 - name: Update namespace - ManagedIdentity SystemAssigned
   azure_rm_servicebus:
-    name: "ns{{ rpfx }}"
+    name: ns{{ rpfx }}
     resource_group: "{{ resource_group }}"
     sku: premium
     identity:
@@ -79,7 +80,7 @@
 
 - name: Gather facts
   azure_rm_servicebus_info:
-    name: "ns{{ rpfx }}"
+    name: ns{{ rpfx }}
     type: namespace
     resource_group: "{{ resource_group }}"
   register: facts
@@ -90,7 +91,7 @@
 
 - name: Update namespace - ManagedIdentity UserAssigned
   azure_rm_servicebus:
-    name: "ns{{ rpfx }}"
+    name: ns{{ rpfx }}
     resource_group: "{{ resource_group }}"
     sku: premium
     identity:
@@ -110,7 +111,7 @@
 
 - name: Update namespace - ManagedIdentity UserAssigned Append
   azure_rm_servicebus:
-    name: "ns{{ rpfx }}"
+    name: ns{{ rpfx }}
     resource_group: "{{ resource_group }}"
     sku: premium
     identity:
@@ -131,7 +132,7 @@
 
 - name: Update namespace - ManagedIdentity UserAssigned Append false
   azure_rm_servicebus:
-    name: "ns{{ rpfx }}"
+    name: ns{{ rpfx }}
     resource_group: "{{ resource_group }}"
     sku: premium
     identity:
@@ -152,8 +153,8 @@
 
 - name: Create a queue
   azure_rm_servicebusqueue:
-    name: "queue{{ rpfx }}"
-    namespace: "ns{{ rpfx }}"
+    name: queue{{ rpfx }}
+    namespace: ns{{ rpfx }}
     resource_group: "{{ resource_group }}"
     max_message_size_in_kb: 2048
     max_size_in_mb: 2048
@@ -167,9 +168,9 @@
 
 - name: Create a topic (check mode)
   azure_rm_servicebustopic:
-    name: "topic{{ rpfx }}"
+    name: topic{{ rpfx }}
     resource_group: "{{ resource_group }}"
-    namespace: "ns{{ rpfx }}"
+    namespace: ns{{ rpfx }}
     duplicate_detection_time_in_seconds: 600
     max_message_size_in_kb: 2048
     max_size_in_mb: 2048
@@ -183,9 +184,9 @@
 
 - name: Create a topic
   azure_rm_servicebustopic:
-    name: "topic{{ rpfx }}"
+    name: topic{{ rpfx }}
     resource_group: "{{ resource_group }}"
-    namespace: "ns{{ rpfx }}"
+    namespace: ns{{ rpfx }}
     duplicate_detection_time_in_seconds: 600
     max_message_size_in_kb: 2048
     max_size_in_mb: 2048
@@ -200,9 +201,9 @@
 
 - name: Create a topic (idempontent)
   azure_rm_servicebustopic:
-    name: "topic{{ rpfx }}"
+    name: topic{{ rpfx }}
     resource_group: "{{ resource_group }}"
-    namespace: "ns{{ rpfx }}"
+    namespace: ns{{ rpfx }}
     duplicate_detection_time_in_seconds: 600
     max_message_size_in_kb: 2048
     max_size_in_mb: 2048
@@ -217,16 +218,16 @@
   azure_rm_servicebussaspolicy:
     name: testpolicy
     resource_group: "{{ resource_group }}"
-    namespace: "ns{{ rpfx }}"
-    topic: "topic{{ rpfx }}"
+    namespace: ns{{ rpfx }}
+    topic: topic{{ rpfx }}
     rights: manage
 
 - name: Create a subscription
   azure_rm_servicebustopicsubscription:
-    name: "subs{{ rpfx }}"
+    name: subs{{ rpfx }}
     resource_group: "{{ resource_group }}"
-    namespace: "ns{{ rpfx }}"
-    topic: "topic{{ rpfx }}"
+    namespace: ns{{ rpfx }}
+    topic: topic{{ rpfx }}
   register: subs
 
 - name: Assert the subscription created
@@ -238,16 +239,16 @@
 - name: Retrive topic
   azure_rm_servicebus_info:
     type: topic
-    name: "topic{{ rpfx }}"
+    name: topic{{ rpfx }}
     resource_group: "{{ resource_group }}"
-    namespace: "ns{{ rpfx }}"
+    namespace: ns{{ rpfx }}
     show_sas_policies: true
   register: facts
 
 - name: Assert the topic facts
   ansible.builtin.assert:
     that:
-      - "facts.servicebuses | length == 1"
+      - facts.servicebuses | length == 1
       - facts.servicebuses[0].id == output.id
       - facts.servicebuses[0].subscription_count == 1
       - facts.servicebuses[0].sas_policies.testpolicy
@@ -255,18 +256,18 @@
 
 - name: Delete subscription
   azure_rm_servicebustopicsubscription:
-    name: "subs{{ rpfx }}"
+    name: subs{{ rpfx }}
     resource_group: "{{ resource_group }}"
-    namespace: "ns{{ rpfx }}"
-    topic: "topic{{ rpfx }}"
+    namespace: ns{{ rpfx }}
+    topic: topic{{ rpfx }}
     state: absent
 
 - name: Retrive topic
   azure_rm_servicebus_info:
     type: topic
-    name: "topic{{ rpfx }}"
+    name: topic{{ rpfx }}
     resource_group: "{{ resource_group }}"
-    namespace: "ns{{ rpfx }}"
+    namespace: ns{{ rpfx }}
     show_sas_policies: true
   register: facts
 
@@ -274,39 +275,39 @@
   ansible.builtin.assert:
     that:
       - facts.servicebuses[0].subscription_count == 0
-      - "facts.servicebuses | length == 1"
+      - facts.servicebuses | length == 1
 
 - name: Delete topic
   azure_rm_servicebustopic:
-    name: "topic{{ rpfx }}"
+    name: topic{{ rpfx }}
     resource_group: "{{ resource_group }}"
-    namespace: "ns{{ rpfx }}"
+    namespace: ns{{ rpfx }}
     state: absent
 
 - name: Retrive topic
   azure_rm_servicebus_info:
-    name: "topic{{ rpfx }}"
+    name: topic{{ rpfx }}
     type: topic
     resource_group: "{{ resource_group }}"
-    namespace: "ns{{ rpfx }}"
+    namespace: ns{{ rpfx }}
     show_sas_policies: true
   register: facts
 
 - name: Assert the topic facts
   ansible.builtin.assert:
     that:
-      - "facts.servicebuses | length == 0"
+      - facts.servicebuses | length == 0
 
 - name: Delete queue
   azure_rm_servicebusqueue:
-    name: "queue{{ rpfx }}"
+    name: queue{{ rpfx }}
     resource_group: "{{ resource_group }}"
-    namespace: "ns{{ rpfx }}"
+    namespace: ns{{ rpfx }}
     state: absent
 
 - name: Delete namespace
   azure_rm_servicebus:
-    name: "ns{{ rpfx }}"
+    name: ns{{ rpfx }}
     resource_group: "{{ resource_group }}"
     state: absent
 
@@ -319,6 +320,6 @@
     api_version: "2023-01-31"
     state: absent
   loop:
-    - "ansible-test-servicebus-identity"
-    - "ansible-test-servicebus-identity-2"
-    - "ansible-test-servicebus-identity-3"
+    - ansible-test-servicebus-identity
+    - ansible-test-servicebus-identity-2
+    - ansible-test-servicebus-identity-3
